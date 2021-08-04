@@ -21,24 +21,24 @@ self.addEventListener('install', (event) => {
 });
 
 // The activate handler takes care of cleaning up old caches.
-// self.addEventListener('activate', (event) => {
-//   const currentCaches = [PRECACHE, RUNTIME];
-//   event.waitUntil(
-//     caches
-//       .keys()
-//       .then((cacheNames) => {
-//         return cacheNames.filter((cacheName) => !currentCaches.includes(cacheName));
-//       })
-//       .then((cachesToDelete) => {
-//         return Promise.all(
-//           cachesToDelete.map((cacheToDelete) => {
-//             return caches.delete(cacheToDelete);
-//           })
-//         );
-//       })
-//       .then(() => self.clients.claim())
-//   );
-// });
+self.addEventListener('activate', (event) => {
+  const currentCaches = [PRECACHE, RUNTIME];
+  event.waitUntil(
+    caches
+      .keys()
+      .then((cacheNames) => {
+        return cacheNames.filter((cacheName) => !currentCaches.includes(cacheName));
+      })
+      .then((cachesToDelete) => {
+        return Promise.all(
+          cachesToDelete.map((cacheToDelete) => {
+            return caches.delete(cacheToDelete);
+          })
+        );
+      })
+      .then(() => self.clients.claim())
+  );
+});
 
 
 
@@ -60,16 +60,16 @@ self.addEventListener('fetch', (event) => {
       })
     );
   }
-  event.respondWith(
-    fetch(event.request).catch(function() {
-      return caches.match(event.request).then(function(response) {
-        if (response) {
-          return response;
-        } else if (event.request.headers.get("accept").includes("text/html")) {
-          // return the cached home page for all requests for html pages
-          return caches.match("/");
-        }
-      });
-    })
-  );
+  // event.respondWith(
+  //   fetch(event.request).catch(function() {
+  //     return caches.match(event.request).then(function(response) {
+  //       if (response) {
+  //         return response;
+  //       } else if (event.request.headers.get("accept").includes("text/html")) {
+  //         // return the cached home page for all requests for html pages
+  //         return caches.match("/");
+  //       }
+  //     });
+  //   })
+  // );
 });
